@@ -8,6 +8,7 @@ var hidden;
 let deck;
 
 var canHit = true; //Permite o jogador de puxar uma carta enqunto yourSum <=21
+var canStay = true;
 
 window.onload = function() {
     buildDeck();
@@ -33,11 +34,15 @@ function shuffleDeck() {
         let temp = deck[i];
         deck[i]=deck[j];
         deck[j] = temp;
-
     }
     console.log(deck);
 }
 function startGame() {
+
+    let backCard = document.createElement("img");
+    backCard.src="./cards/BACK.png";
+    backCard.id="hidden"
+    document.getElementById("dealer-cards").append(backCard);
     hidden=deck.pop()
     dealerSum += getValue(hidden);
     dealerAceCount += checkAce(hidden);
@@ -63,7 +68,7 @@ function startGame() {
     }
     document.getElementById("hit").addEventListener("click", hit);
     document.getElementById("stay").addEventListener("click", stay);
-
+    //document.getElementById("new").addEventListener("click", newRound);
 }
 function endRound() {
 
@@ -86,6 +91,16 @@ function endRound() {
     document.getElementById("results").innerText = message;
     document.getElementById("dealer-sum").innerText = dealerSum;
     document.getElementById("your-sum").innerText = yourSum;
+
+
+    let btnNewRound = document.createElement("button");
+    btnNewRound.className="btn btn-warning"; 
+    btnNewRound.textContent = "New Game";
+    btnNewRound.id="new";
+    btnNewRound.onclick=newRound;   
+    document.getElementById("buttons").append(btnNewRound);   
+    
+    //btn "novo jogo"
 }
 function reduceAce(playerSum, playerAceAcount){
     while (playerSum>21 && playerAceAcount > 0) {
@@ -97,8 +112,12 @@ function reduceAce(playerSum, playerAceAcount){
 
 }
 function stay() {
+    if (canStay==false) {
+        return;
+    }
     dealerSum = reduceAce(dealerSum, dealerAceCount);
     canHit=false;
+    canStay=false;
     endRound();
 }
 function hit() {
@@ -116,9 +135,16 @@ function hit() {
 
     if(reduceAce(yourSum, yourAceCount) > 21){
         canHit=false;
+        canStay=false;
         endRound();
     }
    
+}
+function limparElementos(classe) {
+    var div = document.getElementById(classe);
+    while (div.firstChild) {
+        div.removeChild(div.firstChild);
+    }
 }
 function getValue(card) {
     let data = card.split("-"); // "3-D" --> "3", "D"
@@ -138,4 +164,24 @@ function checkAce(card) {
         return 1;
     }
     return 0;
+}
+//atualizar valor do player durante o hit e o inicio.
+function newRound() {
+
+    document.getElementById("new").remove();
+    
+    dealerSum=0;
+    dealerAceCount=0;
+    yourSum=0;
+    yourAceCount=0;
+    canHit=true;
+    canStay=true;
+    //limpar os valores
+    
+    limparElementos("dealer-cards");
+    limparElementos("your-cards");
+
+    buildDeck();
+    shuffleDeck();
+    startGame()
 }
