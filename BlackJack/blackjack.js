@@ -114,7 +114,6 @@ function startGame() {
 }
 function endRound() {
 
-    //document.getElementById("hidden").src = "./cards/"+hidden+".png";
     divImagensDealer = document.getElementById("dealer-cards");
 
     Array.from(divImagensDealer.children).forEach(element => {
